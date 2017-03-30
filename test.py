@@ -15,19 +15,28 @@ for k in year:
 	for v in months:
 		urllist.append(url1 + str(k) + url2 + str(v))
 
-price = []
-for url in urllist[0:2]:
+def getData(url):
 	request = urllib2.Request(url)
 	response = urllib2.urlopen(request)
 	content = response.read()
+
 	pattern = re.compile('</thead[\s\S]*</td></tr></tr>')
-	tab = re.findall(pattern, str(content))
-	pattern2 = re.compile('>(.*?)<')
-	raw_data = re.findall(pattern2, tab[0])
+	tab = re.findall(pattern,str(content))
+	pattern = re.compile('>(.*?)<')
+	raw_data = re.findall(pattern, tab[0])
 
-	price.extend(raw_data)
+	data = raw_data[:]
+	for m in raw_data:
+		if m == "":
+			data.remove("")
 
-print(price)
+	return data
 
+price = []
+for u in urllist:
+	price.extend(getData(urllist[0]))
 
+print("date","open","close")
 
+for i in range(0,len(price),9):
+	print(price[i])
