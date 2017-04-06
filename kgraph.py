@@ -1,15 +1,20 @@
 __author__ = "Eggs"
- # _*_ coding: utf-8 _*_
-import re
-import urllib2
-import time
-import csv
+# coding: utf-8
+import re,urllib2,time,csv,datetime
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.finance as mpf
+import matplotlib.dates as mpd
+import rpy2.robjects as rb
 
+
+# get the data range include year & season
 t = time.localtime()
 year = range(t[0],1989,-1)
 season = range(4,0,-1)
 
 
+# get the get data function
 def getData(url):
 	request = urllib2.Request(url)
 	response = urllib2.urlopen(request)
@@ -36,6 +41,7 @@ def getData(url):
 
 	return data
 
+# get the data for code input
 def get_stock_price(code):
 	url1 = "http://quotes.money.163.com/trade/lsjysj_"
 	url2 = ".html?year="
@@ -50,9 +56,10 @@ def get_stock_price(code):
 		price.extend(getData(url))
 	return price
 
+# get all histrocial data include all price and others
 price = get_stock_price(600036)
 
-
+		  
 writer = csv.writer(file("stock.csv",'wb'))
 writer.writerow(['Date','Open','High','Low','Close','Volume'])
 pr = []
@@ -61,3 +68,8 @@ for i in range(0,len(price),11):
 
 for prl in pr:
 	writer.writerow(prl)
+
+rb.r.source('kgraph.R')
+
+
+

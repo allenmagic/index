@@ -1,42 +1,18 @@
-__author__ = "Eggs"
- # _*_ coding: utf-8 _*_
-import re
-import urllib2
-import time
+import time,datetime
+#import matplotlib as mpl
+#import matplotlib.dates as mpd
 
-t = time.localtime()
-year = range(t[0],1989,-1)
-months = range(12,0,-1)
-url1 = "http://quotes.money.163.com/trade/lsjysj_zhishu_000001.html?year="
-url2 = "&season="
+#p = ['2016-06-26','2016-06-27']
+#def Date_no(strdate):
+#	t = time.strptime(strdate, "%Y-%m-%d")
+#	y,m,d = t[0:3]
+#	d = datetime.date(y, m, d)
+#	n = mpd.date2num(d)
 
-urllist = []
-for k in year:
-	for v in months:
-		urllist.append(url1 + str(k) + url2 + str(v))
+#	return n
 
-def getData(url):
-	request = urllib2.Request(url)
-	response = urllib2.urlopen(request)
-	content = response.read()
+#print(Date_no(p[0]))
 
-	pattern = re.compile('</thead[\s\S]*</td></tr></tr>')
-	tab = re.findall(pattern,str(content))
-	pattern = re.compile('>(.*?)<')
-	raw_data = re.findall(pattern, tab[0])
+import rpy2.robjects as rb
 
-	data = raw_data[:]
-	for m in raw_data:
-		if m == "":
-			data.remove("")
-
-	return data
-
-price = []
-for u in urllist:
-	price.extend(getData(urllist[0]))
-
-print("date","open","close")
-
-for i in range(0,len(price),9):
-	print(price[i])
+rb.r("library('quantmod')")

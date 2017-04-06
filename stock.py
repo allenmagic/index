@@ -1,15 +1,18 @@
 __author__ = "Eggs"
- # _*_ coding: utf-8 _*_
-import re
-import urllib2
-import time
-import csv
+# coding: utf-8
+import re,urllib2,time,csv,datetime
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.finance as mpf
+import matplotlib.dates as mpd
 
+# get the data range include year & season
 t = time.localtime()
 year = range(t[0],1989,-1)
 season = range(4,0,-1)
 
 
+# get the get data function
 def getData(url):
 	request = urllib2.Request(url)
 	response = urllib2.urlopen(request)
@@ -36,6 +39,7 @@ def getData(url):
 
 	return data
 
+# get the data for code input
 def get_stock_price(code):
 	url1 = "http://quotes.money.163.com/trade/lsjysj_"
 	url2 = ".html?year="
@@ -50,14 +54,40 @@ def get_stock_price(code):
 		price.extend(getData(url))
 	return price
 
+# get all histrocial data include all price and others
 price = get_stock_price(600036)
 
+# get the number for date by date2num
+def Date_no(strdate):
+	t = time.strptime(strdate, "%Y-%m-%d")
+	y,m,d = t[0:3]
+	d = datetime.date(y, m, d)
+	n = mpd.date2num(d)
 
-writer = csv.writer(file("stock.csv",'wb'))
-writer.writerow(['Date','Open','High','Low','Close','Volume'])
+	return n
+
+# get the price data 
 pr = []
 for i in range(0,len(price),11):
-	pr.extend([[price[i],price[i+1],price[i+2],price[i+3],price[i+4],price[i+8]]])
+	pr.extend([[
+		Date_no(price[i])
+		,float(price[i+1])
+		,float(price[i+2])
+		,float(price[i+3])
+		,float(price[i+4])
+		,float(price[i+8])]]
+		)
+		  
+quotes = pr[0:80]
 
-for prl in pr:
-	writer.writerow(prl)
+print(quotes)
+
+fig,ax = plt.subplots(figsize=(30,6))
+fig.subplots_adjust(bottom=0.2)
+mpf.candlestick_ohlc(ax,quotes,width=0.4,colorup='r',colordown='g')
+plt.grid(False)
+ax.xaxis_date()
+ax.autoscale_view()
+plt.setp(plt.gca().get_xticklabels(), rotation=30) 
+plt.show()
+
