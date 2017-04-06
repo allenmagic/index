@@ -52,6 +52,7 @@ def get_stock_price(code):
 	price = []
 	for url in urllist:
 		price.extend(getData(url))
+		
 	return price
 
 # get all histrocial data include all price and others
